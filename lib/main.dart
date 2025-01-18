@@ -51,6 +51,17 @@ class _DockState<T> extends State<Dock<T>> {
 
   bool get dragging => _items.length < sourceLength;
 
+  void _onAcceptWithDetails(DragTargetDetails<int> details, int index) {
+    setState(() {
+      _items.insert(
+        index,
+        itemAtIndex(details.data),
+      );
+      _itemsBeforeDrag.clear();
+      _itemsBeforeDrag.addAll(_items);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -97,16 +108,8 @@ class _DockState<T> extends State<Dock<T>> {
                         });
                       });
                 },
-                onAcceptWithDetails: (DragTargetDetails<int> details) {
-                  setState(() {
-                    _items.insert(
-                      index,
-                      itemAtIndex(details.data),
-                    );
-                    _itemsBeforeDrag.clear();
-                    _itemsBeforeDrag.addAll(_items);
-                  });
-                },
+                onAcceptWithDetails: (DragTargetDetails<int> details) =>
+                    _onAcceptWithDetails(details, index),
               );
             }),
             if (dragging)
@@ -117,16 +120,8 @@ class _DockState<T> extends State<Dock<T>> {
                   List<dynamic> rejected,
                 ) =>
                     Stub(),
-                onAcceptWithDetails: (DragTargetDetails<int> details) {
-                  setState(() {
-                    _items.insert(
-                      sourceLength - 1,
-                      itemAtIndex(details.data),
-                    );
-                    _itemsBeforeDrag.clear();
-                    _itemsBeforeDrag.addAll(_items);
-                  });
-                },
+                onAcceptWithDetails: (DragTargetDetails<int> details) =>
+                    _onAcceptWithDetails(details, sourceLength - 1),
               ),
           ],
         ),
